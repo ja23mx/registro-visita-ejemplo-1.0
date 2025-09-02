@@ -142,6 +142,29 @@
             }
         }
 
+        // Detectar si está en Telegram Web App
+        function isTelegramWebApp() {
+            return window.Telegram && window.Telegram.WebApp;
+        }
+        
+        // Obtener datos del usuario de Telegram
+        function getTelegramUserData() {
+            if (isTelegramWebApp()) {
+                return Telegram.WebApp.initDataUnsafe.user;
+            }
+            return null;
+        }
+        
+        // Usar en tu aplicación
+        window.addEventListener('load', function() {
+            const userData = getTelegramUserData();
+            if (userData) {
+                console.log('Usuario de Telegram:', userData);
+                // Aquí puedes personalizar la experiencia
+                document.body.classList.add('telegram-mode');
+            }
+        });
+
         // Probar conexión automáticamente al cargar
         window.addEventListener('load', testConnection);
     </script>
