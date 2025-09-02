@@ -133,6 +133,11 @@
                         'Telegram-Init-Data': initData
                     }
                 });
+
+                alert('🔍 Telegram object:', window.Telegram);
+                alert('🔍 WebApp object:', window.Telegram?.WebApp);
+                alert('🔍 InitData:', window.Telegram?.WebApp?.initData);
+                alert('🔍 InitDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
                 
                 const data = await response.json();
                 statusSpan.innerHTML = '✅ Conectado';
@@ -154,12 +159,11 @@
                 console.log('Usuario de Telegram:', userData);
                 document.body.classList.add('telegram-mode');
             }
-            
-            // ✅ AGREGAR ESTA LÍNEA NUEVA
-            displayUserInfo(); // ← Mostrar info del usuario
-            
-            // Mantener tu prueba de conexión
-            testConnection();
+
+            setTimeout(() => {
+                displayUserInfo();
+                testConnection();
+            }, 500);
         });
 
         async function simulateVisit() {
