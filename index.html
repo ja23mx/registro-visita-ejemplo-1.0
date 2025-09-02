@@ -97,32 +97,70 @@
         const responseDiv = document.getElementById('response');
         const statusSpan = document.getElementById('status');
 
+        // FUNCIÓN PARA MOSTRAR INFO DE USUARIO 
+        function displayUserInfo() {
+            const userInfo = window.Telegram?.WebApp?.initDataUnsafe?.user;
+            
+            if (userInfo) {
+                const userDiv = document.createElement('div');
+                userDiv.style.background = '#e8f5e8';
+                userDiv.style.padding = '15px';
+                userDiv.style.borderRadius = '10px';
+                userDiv.style.margin = '10px 0';
+                userDiv.innerHTML = `
+                    <h4>👤 Usuario Telegram</h4>
+                    <p><strong>Chat ID:</strong> ${userInfo.id}</p>
+                    <p><strong>Nombre:</strong> ${userInfo.first_name} ${userInfo.last_name || ''}</p>
+                    <p><strong>Username:</strong> @${userInfo.username || 'N/A'}</p>
+                `;
+                
+                // Insertar después del status-card
+                const statusCard = document.querySelector('.status-card');
+                statusCard.parentNode.insertBefore(userDiv, statusCard.nextSibling);
+                
+                console.log('🔍 Chat ID del usuario:', userInfo.id);
+            }
+        }
+       
         async function testConnection() {
             try {
                 responseDiv.innerHTML = '🔄 Probando conexión con el servidor...';
                 statusSpan.innerHTML = 'Conectando...';
                 
-                //const response = await fetch(`${backendUrl}/api/health`);
-                //const data = await response.json();
-
                 const initData = window.Telegram?.WebApp?.initData || '';
-    
                 const response = await fetch(`${backendUrl}/api/health`, {
                     headers: {
                         'Telegram-Init-Data': initData
                     }
                 });
                 
+                const data = await response.json();
                 statusSpan.innerHTML = '✅ Conectado';
                 statusSpan.style.color = '#28a745';
-                //responseDiv.innerHTML = JSON.stringify(data, null, 2);
-                responseDiv.innerHTML = JSON.stringify(response, null, 2);
+                responseDiv.innerHTML = JSON.stringify(data, null, 2);
+                
             } catch (error) {
                 statusSpan.innerHTML = '❌ Error de conexión';
                 statusSpan.style.color = '#dc3545';
-                responseDiv.innerHTML = `Error: ${error.message}\n\nVerifica:\n- Servidor encendido\n- Puerto 3002 accesible\n- Firewall configurado`;
+                responseDiv.innerHTML = `Error: ${error.message}`;
             }
         }
+
+                // EVENT LISTENER
+        window.addEventListener('load', function() {
+            // Tu código existente...
+            const userData = getTelegramUserData();
+            if (userData) {
+                console.log('Usuario de Telegram:', userData);
+                document.body.classList.add('telegram-mode');
+            }
+            
+            // ✅ AGREGAR ESTA LÍNEA NUEVA
+            displayUserInfo(); // ← Mostrar info del usuario
+            
+            // Mantener tu prueba de conexión
+            testConnection();
+        });
 
         async function simulateVisit() {
             try {
@@ -182,22 +220,6 @@
                 console.log('🔍 Chat ID del usuario:', userInfo.id);
             }
         }
-
-        // Llamar al cargar
-        window.addEventListener('load', displayUserInfo);
-                
-        // Usar en tu aplicación
-        window.addEventListener('load', function() {
-            const userData = getTelegramUserData();
-            if (userData) {
-                console.log('Usuario de Telegram:', userData);
-                // Aquí puedes personalizar la experiencia
-                document.body.classList.add('telegram-mode');
-            }
-        });
-
-        // Probar conexión automáticamente al cargar
-        window.addEventListener('load', testConnection);
     </script>
 </body>
 </html>
