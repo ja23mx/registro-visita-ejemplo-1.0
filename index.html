@@ -171,11 +171,6 @@
                         'Telegram-Init-Data': initData
                     }
                 });
-
-                alert('🔍 Telegram object:', window.Telegram);
-                alert('🔍 WebApp object:', window.Telegram?.WebApp);
-                alert('🔍 InitData:', window.Telegram?.WebApp?.initData);
-                alert('🔍 InitDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
                 
                 const data = await response.json();
                 statusSpan.innerHTML = '✅ Conectado';
