@@ -102,12 +102,21 @@
                 responseDiv.innerHTML = '🔄 Probando conexión con el servidor...';
                 statusSpan.innerHTML = 'Conectando...';
                 
-                const response = await fetch(`${backendUrl}/api/health`);
-                const data = await response.json();
+                //const response = await fetch(`${backendUrl}/api/health`);
+                //const data = await response.json();
+
+                const initData = window.Telegram?.WebApp?.initData || '';
+    
+                const response = await fetch(`${backendUrl}/api/health`, {
+                    headers: {
+                        'Telegram-Init-Data': initData
+                    }
+                });
                 
                 statusSpan.innerHTML = '✅ Conectado';
                 statusSpan.style.color = '#28a745';
-                responseDiv.innerHTML = JSON.stringify(data, null, 2);
+                //responseDiv.innerHTML = JSON.stringify(data, null, 2);
+                responseDiv.innerHTML = JSON.stringify(response, null, 2);
             } catch (error) {
                 statusSpan.innerHTML = '❌ Error de conexión';
                 statusSpan.style.color = '#dc3545';
