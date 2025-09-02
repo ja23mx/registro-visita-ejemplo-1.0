@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Telegram Web App script - Must be included first to ensure WebApp object is available -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro Visitas - Ejemplo 1.0</title>
@@ -78,6 +81,13 @@
             <p>Estado: <span id="status">Verificando...</span></p>
         </div>
 
+        <!-- Telegram Web App Debugging Section -->
+        <div class="status-card" id="telegram-debug" style="border-left-color: #007bff;">
+            <strong>🔧 Telegram Web App Debug Info:</strong>
+            <div id="telegram-initdata" class="url-display">Loading...</div>
+            <div id="telegram-initdata-unsafe" class="url-display">Loading...</div>
+        </div>
+
         <button class="button" onclick="testConnection()">
             🔄 Probar Conexión con Servidor
         </button>
@@ -93,9 +103,37 @@
     </div>
 
     <script>
+        // Signal to Telegram that the Mini App is ready
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+        }
+
         const backendUrl = 'https://meniam.virtualizate.com';
         const responseDiv = document.getElementById('response');
         const statusSpan = document.getElementById('status');
+
+        // Function to update the Telegram debugging information display
+        function updateTelegramDebugInfo() {
+            const initDataDiv = document.getElementById('telegram-initdata');
+            const initDataUnsafeDiv = document.getElementById('telegram-initdata-unsafe');
+            
+            if (window.Telegram && window.Telegram.WebApp) {
+                // Display initData
+                const initData = window.Telegram.WebApp.initData || 'No initData available';
+                initDataDiv.innerHTML = `<strong>initData:</strong><br>${initData}`;
+                
+                // Display initDataUnsafe
+                const initDataUnsafe = window.Telegram.WebApp.initDataUnsafe;
+                if (initDataUnsafe && Object.keys(initDataUnsafe).length > 0) {
+                    initDataUnsafeDiv.innerHTML = `<strong>initDataUnsafe:</strong><br>${JSON.stringify(initDataUnsafe, null, 2)}`;
+                } else {
+                    initDataUnsafeDiv.innerHTML = `<strong>initDataUnsafe:</strong><br>No unsafe data available`;
+                }
+            } else {
+                initDataDiv.innerHTML = `<strong>initData:</strong><br>Telegram WebApp not available`;
+                initDataUnsafeDiv.innerHTML = `<strong>initDataUnsafe:</strong><br>Telegram WebApp not available`;
+            }
+        }
 
         // FUNCIÓN PARA MOSTRAR INFO DE USUARIO 
         function displayUserInfo() {
@@ -153,6 +191,9 @@
 
                 // EVENT LISTENER
         window.addEventListener('load', function() {
+            // Update the debugging information display
+            updateTelegramDebugInfo();
+            
             // Tu código existente...
             const userData = getTelegramUserData();
             if (userData) {
