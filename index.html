@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Visitas - Ejemplo 1.0</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .status-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+        .button {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #5a67d8;
+        }
+        .response {
+            background: #fff;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 100px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .url-display {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏢 Registro de Visitas - Ejemplo 1.0</h1>
+        
+        <div class="status-card">
+            <strong>✅ Backend Conectado:</strong>
+            <div class="url-display" id="backend-url">http://meniam.virtualizate.com:3002</div>
+            <p>Estado: <span id="status">Verificando...</span></p>
+        </div>
+
+        <button class="button" onclick="testConnection()">
+            🔄 Probar Conexión con Servidor
+        </button>
+
+        <button class="button" onclick="simulateVisit()">
+            📋 Simular Registro de Visita
+        </button>
+
+        <h3>📊 Respuesta del Servidor:</h3>
+        <div class="response" id="response">
+            Esperando interacción...
+        </div>
+    </div>
+
+    <script>
+        const backendUrl = 'http://meniam.virtualizate.com:3002';
+        const responseDiv = document.getElementById('response');
+        const statusSpan = document.getElementById('status');
+
+        async function testConnection() {
+            try {
+                responseDiv.innerHTML = '🔄 Probando conexión con el servidor...';
+                statusSpan.innerHTML = 'Conectando...';
+                
+                const response = await fetch(`${backendUrl}/api/health`);
+                const data = await response.json();
+                
+                statusSpan.innerHTML = '✅ Conectado';
+                statusSpan.style.color = '#28a745';
+                responseDiv.innerHTML = JSON.stringify(data, null, 2);
+            } catch (error) {
+                statusSpan.innerHTML = '❌ Error de conexión';
+                statusSpan.style.color = '#dc3545';
+                responseDiv.innerHTML = `Error: ${error.message}\n\nVerifica:\n- Servidor encendido\n- Puerto 3002 accesible\n- Firewall configurado`;
+            }
+        }
+
+        async function simulateVisit() {
+            try {
+                responseDiv.innerHTML = '📝 Simulando registro de visita...';
+                
+                const visitData = {
+                    action: 'register_visit',
+                    visitor: 'Usuario Ejemplo',
+                    timestamp: new Date().toISOString(),
+                    location: 'Oficina Principal',
+                    purpose: 'Prueba del sistema'
+                };
+
+                const response = await fetch(`${backendUrl}/api/echo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(visitData)
+                });
+                
+                const data = await response.json();
+                responseDiv.innerHTML = JSON.stringify(data, null, 2);
+            } catch (error) {
+                responseDiv.innerHTML = `❌ Error en registro: ${error.message}`;
+            }
+        }
+
+        // Probar conexión automáticamente al cargar
+        window.addEventListener('load', testConnection);
+    </script>
+</body>
+</html>
